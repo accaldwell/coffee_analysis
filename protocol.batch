@@ -1,0 +1,279 @@
+#Supplemental Methods, Mothur batch file with annotations
+#Adam Caldwell 2013-02-13
+
+#Get reference files, unzip, merge, cleanup
+#Mothur's GreenGenes Formatted Databases are here: http://www.mothur.org/wiki/Greengenes-formatted_databases
+#Mothur's SILVA reference files are here: http://www.mothur.org/wiki/Silva_reference_files
+
+system(wget http://www.mothur.org/w/images/9/9d/Gg_13_5_99.taxonomy.tgz)
+
+system(tar xzf Gg_13_5_99.taxonomy.tgz)
+
+system(rm Gg_13_5_99.taxonomy.tgz)
+
+system(wget http://www.mothur.org/w/images/9/98/Silva.bacteria.zip)
+
+system(wget http://www.mothur.org/w/images/3/3c/Silva.archaea.zip)
+
+system(unzip Silva.bacteria.zip)
+
+system(unzip Silva.archaea.zip)
+
+system(rm Silva.bacteria.zip Silva.archaea.zip)
+
+system(mv silva.bacteria/silva.bacteria.fasta .)
+
+system(mv silva.bacteria/silva.bacteria.silva.tax .)
+
+system(mv Silva.archaea/silva.archaea.fasta .)
+
+system(mv Silva.archaea/silva.archaea.silva.tax .)
+
+system(rm -Rf __MACOSX silva.bacteria Silva.archaea)
+
+merge.files(input=silva.archaea.fasta-silva.bacteria.fasta, output=silva.bacarch.fasta)
+
+merge.files(input=silva.archaea.silva.tax-silva.bacteria.silva.tax, output=silva.bacarch.silva.tax)
+
+system(rm -f silva.archaea.fasta silva.bacteria.fasta silva.archaea.silva.tax silva.bacteria.silva.tax)
+
+#Make contigs from demultiplexed, quality filtered reads.
+
+make.contigs(file=COF.files, processors=16)
+
+#Move some files to universal naming system
+
+system(mv COF.contigs.groups contigs.groups)
+
+system(mv COF.contigs.report contigs.report)
+
+system(mv COF.trim.contigs.fasta contigs.fasta)
+
+#Remove uneeded file, should be empty
+
+system(rm COF.scrap.contigs.fasta)
+
+#Sequences screened to 2.5th %ile - 97.5th %ile size +/- 2bp on either side. Seqeunces with ambiguities (Ns), or long homopolymers are also removed.
+
+screen.seqs(fasta=contigs.fasta, group=contigs.groups, maxambig=0, maxhomop=8, minlength=250, maxlength=256)
+
+#Remove an unneeded file to tidy up
+
+system(rm contigs.bad.accnos)
+
+#Find unique sequences, and count them up
+
+unique.seqs(fasta=contigs.good.fasta)
+
+count.seqs(name=contigs.good.names, group=contigs.good.groups)
+
+#Filter reference sequences to reduce size and eliminate unneeded alignment positions
+
+filter.seqs(fasta=silva.bacarch.fasta)
+
+#Chop our references to +- a few hundred alignment positions of our target region
+
+pcr.seqs(fasta=silva.bacarch.filter.fasta, start=2790, end=4250, keepdots=F)
+
+#Align sequences to SILVA reference
+
+align.seqs(fasta=contigs.good.unique.fasta, reference=silva.bacarch.filter.pcr.fasta)
+
+#Remove more unneeded files
+
+system(rm contigs.good.unique.flip.accnos contigs.good.unique.align.report)
+
+#Check how sequences have aligned to the reference and screen out poorly aligned sequences.
+
+summary.seqs(fasta=contigs.good.unique.align, count=contigs.good.count_table)
+
+screen.seqs(fasta=contigs.good.unique.align, count=contigs.good.count_table, summary=contigs.good.unique.summary, start=13, end=1442, minlength=250)
+
+#Remove more uneeded files
+
+system(rm contigs.good.unique.bad.accnos contigs.good.unique.good.summary)
+
+#Filter sequences again, insuring they start and stop at the same position, and eliminate any unneeded alignment positions.
+
+filter.seqs(fasta=contigs.good.unique.good.align, vertical=T, trump=.)
+
+#Remove uneeded file
+
+system(rm contigs.filter)
+
+#Check for unique sequences again, now that weve cleaned up the alignment.
+
+unique.seqs(fasta=contigs.good.unique.good.filter.fasta, count=contigs.good.good.count_table)
+
+#Pre-cluster sequences, grouping sequences within 2 differences of each other. Based on reccomendation to use 1 difference per 100bp.
+
+pre.cluster(fasta=contigs.good.unique.good.filter.unique.fasta, count=contigs.good.unique.good.filter.count_table, diffs=2)
+
+#Remove more uneeded files
+
+system(rm *.map)
+
+#Check for chimeric sequences. Remove them.
+
+chimera.uchime(fasta=contigs.good.unique.good.filter.unique.precluster.fasta, count=contigs.good.unique.good.filter.unique.precluster.count_table, dereplicate=t)
+
+remove.seqs(fasta=contigs.good.unique.good.filter.unique.precluster.fasta, accnos=contigs.good.unique.good.filter.unique.precluster.uchime.accnos)
+
+#Classify sequences, using GreenGenes database
+
+classify.seqs(fasta=contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=contigs.good.unique.good.filter.unique.precluster.uchime.pick.count_table, reference=gg_13_5_99.fasta, taxonomy=gg_13_5_99.gg.tax, cutoff=80)
+
+#Remove anything non-prokaryotic (they shouldnt be amplified), or unknown
+
+remove.lineage(taxonomy=contigs.good.unique.good.filter.unique.precluster.pick.gg.wang.taxonomy, taxon=Chloroplast-Mitochondria-unknown-Eukaryota, fasta=contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=contigs.good.unique.good.filter.unique.precluster.uchime.pick.count_table)
+
+#Filter again, since we have removed chimeras and other sequences classified as unwanted
+
+filter.seqs(fasta=contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, vertical=T, trump=.)
+
+#Remove another uneeded file
+
+system(rm contigs.filter)
+
+#Following every filter, we need to again check and see which sequences are unique
+
+unique.seqs(fasta=contigs.good.unique.good.filter.unique.precluster.pick.pick.filter.fasta,count=contigs.good.unique.good.filter.unique.precluster.uchime.pick.pick.count_table)
+
+#Move some files, since names are getting a bit lengthy
+
+system(mv contigs.good.unique.good.filter.unique.precluster.pick.pick.filter.count_table all.count_table)
+
+system(mv contigs.good.unique.good.filter.unique.precluster.pick.pick.filter.unique.fasta all.fasta)
+
+#Here, we split the sequences by abundance to remove singletons. Singletons are more likely to be erronious, and Mothur has trouble clustering large number of sequences anyways.
+
+split.abund(fasta=all.fasta, count=all.count_table, cutoff=1)
+
+#Move files to rename with clearer names
+
+system(mv all.abund.fasta abund.fasta)
+
+system(mv all.rare.fasta rare.fasta)
+
+system(mv all.abund.count_table abund.count_table)
+
+system(mv all.rare.count_table rare.count_table)
+
+#Subsample non-singletons to 3000 sequences per sample. This number was determined empirically, larger numbers of sequences failed to cluster.
+
+sub.sample(fasta=abund.fasta, count=abund.count_table, size=3000, persample=true)
+
+#Eliminate unneeded alignment positions, now that we have less sequences.
+
+filter.seqs(fasta=abund.subsample.fasta)
+
+#Build distance file of subsampled sequences. Cluster sequences.
+
+dist.seqs(fasta=abund.subsample.filter.fasta, cutoff=0.50)
+
+cluster(column=abund.subsample.filter.dist, count=abund.subsample.count_table)
+
+#Get our OTUs at 90%, 95%, and 97% similarity levels.
+
+get.oturep(column=abund.subsample.filter.dist, list=abund.subsample.filter.an.unique_list.list, count=abund.subsample.count_table, label=0.03-0.05-0.10, fasta=abund.subsample.filter.fasta)
+
+#Make a file of what OTUs are shared between samples at the 97% similarity level.
+
+make.shared(list=abund.subsample.filter.an.unique_list.list, count=abund.subsample.count_table, label=0.03)
+
+#Remove a bunch of unneeded files.
+
+system(rm *rabund)
+
+#We're going to make another shared file later, so give this one a unique name.
+
+system(mv abund.subsample.filter.an.unique_list.shared abund.subsample.filter.an.unique_list.wcount.shared)
+
+#Run assorted richness and diversity calculators on our shared OTU data.
+
+summary.single(shared=abund.subsample.filter.an.unique_list.wcount.shared)
+
+#These files arent needed.
+
+system(rm *rabund)
+
+#Merge individual samples into site/sample type groups. Then, run richness and diversity calculators on the merged data.
+
+merge.groups(shared=abund.subsample.filter.an.unique_list.wcount.shared, design=COF_site_type.design)
+
+summary.single(shared=abund.subsample.filter.an.unique_list.wcount.merge.shared, iters=10000)
+
+#More unneeded files.
+
+system(rm *rabund)
+
+#Calculate distances between samples based on what OTUs are shared between samples.
+
+dist.shared(shared=abund.subsample.filter.an.unique_list.wcount.shared)
+
+#Run a bunch of AMOVA tests, based on various groupings of samples.
+
+amova(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, design=COF_site.design, iters=10000)
+
+system(mv abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.amova COF_site.amova)
+
+amova(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, design=COF_type.design, iters=10000)
+
+system(mv abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.amova COF_type.amova)
+
+amova(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, design=COF_site_type.design, iters=10000)
+
+system(mv abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.amova COF_site_type.amova)
+
+#Run both PCoA and NMDS tests on the distance file containing the differences between samples.
+
+pcoa(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist)
+
+nmds(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, iters=100, maxiters=1000)
+
+#Here we are going to split off the coffee rhizosphere samples, since we only want them.
+
+get.groups(list=abund.subsample.filter.an.unique_list.list, count=abund.subsample.count_table, groups=GC11-GC12-GC13-GC14-GC15-GC16-GC17-GC18-GC19-GC20-GC21-GC22-GC23-GC24-GC25-GC26-GC27-GC28-GC29-GC30-JC41-JC42-JC43-JC44-JC45-JC46-JC47-JC48-JC49-JC50-JC51-JC52-JC53-JC54-JC55-JC56-JC57-JC58-JC59-JC60-CC71-CC72-CC73-CC74-CC75-CC76-CC77-CC78-CC79-CC80-CC81-CC82-CC83-CC84-CC85-CC86-CC87-CC88-CC89-CC90)
+
+#Rename the files to be clearer.
+
+system(mv abund.subsample.pick.count_table CafeOnly.count_table)
+
+system(mv abund.subsample.filter.an.unique_list.pick.list CafeOnly.list)
+
+#Make a shared file for the coffee rhizosphere samples alone
+
+make.shared(list=CafeOnly.list, count=CafeOnly.count_table, label=0.03)
+
+#Remove uneeded files, again.
+system(rm *rabund)
+
+#LEfSe test, to determine what OTUs differ between the coffee rhizosphere sites
+
+lefse(shared=CafeOnly.shared, design=../COF_meta_full.csv)
+
+#Get taxonomy of coffee rhizosphere OTUs
+
+classify.otu(taxonomy=contigs.good.unique.good.filter.unique.precluster.pick.gg.wang.pick.taxonomy, list=CafeOnly.list, label=0.03, probs=F)
+
+#Extract OTU phylums from taxonomy file, clean GreenGenes names
+
+system(cat CafeOnly.0.03.cons.taxonomy | awk -F '[\t;]' '{print $1 "\t" $4}' | sed 's/p__//' > OTU_phylums.tsv)
+
+#Process lefse data for import to R
+
+system(python3 scripts/process_lefse.py OTU_phylums.tsv CafeOnly.0.03.lefse_summary > processed_lefse.tsv)
+
+#Reformat taxonomy file
+
+system(cat CafeOnly.0.03.cons.taxonomy | tr ';' '\t' | cut -f 1,3- > fulltax.tsv)
+
+#Get full taxonomy for lefse OTUs
+
+system(python3 scripts/get_lefse_fulltax.py CafeOnly.0.03.lefse_summary fulltax.tsv > lefseOTUs_fulltax.tsv)
+
+#Process taxonomy for Krona
+
+system(python2 scripts/mothur_krona_XML.py contigs.good.unique.good.filter.unique.precluster.pick.gg.wang.tax.summary > krona.xml)
+
+system(ktImportXML krona.xml)
