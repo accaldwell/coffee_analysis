@@ -3,7 +3,7 @@ coffee_analysis: Supplemental data and code for coffee project.
 
 ##Requirements
 * Linux or OS X (Arch Linux and Ubuntu Server 13.10 used)
-* A large amount of memory (Amazon EC2 instance type cr1.8xlarge was used for memory intensive steps, which provides 244GB of memory)
+* A large amount of memory. Approximately 137GB RAM is used during the get.oturep() step, and ~47GB is used during the cluster() step. Amazon EC2 instance type cr1.8xlarge was used for memory intensive steps, which provides 244GB of memory.
 * Trimmomatic (version 0.32 used)
 * Mothur (version 1.32.1 used)
 * Python 2 and 3 (versions 2.7.6 and 3.3.3 used)
