@@ -14,7 +14,7 @@ coffee_analysis: Supplemental data and code for coffee project.
 ##Obtaining raw reads
 Raw reads are deposited in NCBI's SRA. 
 
-###Indivdual runs:
+###Individual runs:
 
 INT-Coffee: SRR1170902
 
@@ -28,10 +28,10 @@ ORG-Coffee: SRR1170933
 
 ORG-Control: SRR1170934
 
-As of writing (2014-02-15), these are in the prcoess of being released. Please contact me if you have trouble accesssing data.
+As of writing (2014-02-15), these are in the process of being released. Please contact me if you have trouble accessing data.
 
 ##Cleaning raw reads
-Prior to running mothur, raw fastq sequences need to be cleaned with trimmomatic. A convienence script is provided at scripts/print_trimm_cmd.py if changes to path names need to be made. By default, the scripts assume the raw reads are in fastqs_raw/
+Prior to running mothur, raw fastq sequences need to be cleaned with trimmomatic. A convenience script is provided at scripts/print_trimm_cmd.py if changes to path names need to be made. By default, the scripts assume the raw reads are in fastqs_raw/
 
     $bash scripts/trimm_raw_reads.sh
     
@@ -44,4 +44,4 @@ Annotations are provided in the mothur batch file, explaining steps. The mothur 
 ###Contact info
 primary email: adam.caldwell@gmail.com
 
-institutional email: adamcaldwell@gmail
+institutional email: adam.caldwell@sjsu.edu
