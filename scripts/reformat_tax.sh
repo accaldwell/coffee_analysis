@@ -1,0 +1,1 @@
+cat CafeOnly.0.03.cons.taxonomy | tr ';' '\t' | cut -f 1,3- > fulltax.tsv

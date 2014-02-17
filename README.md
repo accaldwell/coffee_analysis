@@ -10,6 +10,7 @@ coffee_analysis: Supplemental data and code for coffee project.
 * BioPython (version 1.63 used)
 * R (version 3.0.2 used)
 * R libraries ggplot2, plyr, gridExtra
+* Krona
 
 ##Obtaining raw reads
 Raw reads are deposited in NCBI's SRA. 
