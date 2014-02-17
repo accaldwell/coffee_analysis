@@ -46,10 +46,15 @@ Annotations are provided in the mothur batch file, explaining steps. The mothur 
 Sample and sequences have abbreviated names during data analysis.
 
 ICfXX_YY: INT-Coffee, Sample XX, Sequence YY (only for seqences)
+
 ICn: INT-Control
+
 TCf: TRN-Coffee
+
 TCn: TRN-Control
+
 OCf: ORG-Coffee
+
 OCn: ORG-Control
 
 ###Contact info
