@@ -235,7 +235,7 @@ pcoa(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist)
 
 nmds(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, iters=100, maxiters=1000)
 
-#Fix NMDS axes header, shouldnt be neccesary in mothur 1.33+. Due to mothur bug, this cant be run via system(), run on cmd line
+#Fix NMDS axes header, shouldnt be neccesary in mothur 1.33+.
 
 system(bash scripts/fix_nmds.sh)
 
@@ -280,7 +280,7 @@ system(python3 scripts/process_lefse.py OTU_phylums.tsv CafeOnly.0.03.lefse_summ
 
 system(R CMD BATCH scripts/lefse_heatmap.R)
 
-#Reformat taxonomy file. Must be run on command line do to mothur's handling of system()
+#Reformat taxonomy file.
 
 system(bash scripts/reformat_tax.sh)
 
