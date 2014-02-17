@@ -42,6 +42,16 @@ Prior to running mothur, raw fastq sequences need to be cleaned with trimmomatic
     
 Annotations are provided in the mothur batch file, explaining steps. The mothur protocol also runs accessory scripts, with additional requirements as seen above.
 
+##A note on sample naming
+Sample and sequences have abbreviated names during data analysis.
+
+ICfXX_YY: INT-Coffee, Sample XX, Sequence YY (only for seqences)
+ICn: INT-Control
+TCf: TRN-Coffee
+TCn: TRN-Control
+OCf: ORG-Coffee
+OCn: ORG-Control
+
 ###Contact info
 primary email: adam.caldwell@gmail.com
 
