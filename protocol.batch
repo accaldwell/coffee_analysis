@@ -203,6 +203,10 @@ merge.groups(shared=abund.subsample.filter.an.unique_list.wcount.shared, design=
 
 summary.single(shared=abund.subsample.filter.an.unique_list.wcount.merge.shared, iters=10000)
 
+#Plot chao data
+
+system(R CMD BATCH scripts/plot_chao.R)
+
 #More unneeded files.
 
 system(rm *rabund)
@@ -230,6 +234,14 @@ system(mv abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.amova COF
 pcoa(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist)
 
 nmds(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, iters=100, maxiters=1000)
+
+#Fix NMDS axes header, shouldnt be neccesary in mothur 1.33+. Due to mothur bug, this cant be run via system(), run on cmd line
+
+#sed -i '0,/^/s/^/group/' abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.nmds.axes
+
+#Plot NMDS figure
+
+system(R CMD BATCH scripts/mothur_nmds_plot.R)
 
 #Here we are going to split off the coffee rhizosphere samples, since we only want them.
 
@@ -263,6 +275,10 @@ system(cat CafeOnly.0.03.cons.taxonomy | awk -F '[\t;]' '{print $1 "\t" $4}' | s
 #Process lefse data for import to R
 
 system(python3 scripts/process_lefse.py OTU_phylums.tsv CafeOnly.0.03.lefse_summary > processed_lefse.tsv)
+
+#Plot lefse figure
+
+system(R CMD BATCH scripts/lefse_heatmap.R)
 
 #Reformat taxonomy file
 
