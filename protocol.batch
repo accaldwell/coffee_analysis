@@ -280,9 +280,9 @@ system(python3 scripts/process_lefse.py OTU_phylums.tsv CafeOnly.0.03.lefse_summ
 
 system(R CMD BATCH scripts/lefse_heatmap.R)
 
-#Reformat taxonomy file
+#Reformat taxonomy file. Must be run on command line do to mothur's handling of system()
 
-system(cat CafeOnly.0.03.cons.taxonomy | tr ';' '\t' | cut -f 1,3- > fulltax.tsv)
+#cat CafeOnly.0.03.cons.taxonomy | tr ';' '\t' | cut -f 1,3- > fulltax.tsv
 
 #Get full taxonomy for lefse OTUs
 
