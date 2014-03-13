@@ -233,7 +233,7 @@ system(mv abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.amova COF
 
 pcoa(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist)
 
-nmds(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, iters=100, maxiters=1000)
+nmds(phylip=abund.subsample.filter.an.unique_list.wcount.thetayc.0.03.lt.dist, iters=1000, maxiters=10000)
 
 #Fix NMDS axes header, shouldnt be neccesary in mothur 1.33+.
 
