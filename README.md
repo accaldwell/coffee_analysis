@@ -2,7 +2,7 @@ coffee_analysis: Supplemental data and code for coffee project.
 ===============
 
 ##Requirements
-* Linux or OS X (Arch Linux and Ubuntu Server 13.10 used)
+* Linux (Arch Linux and Ubuntu Server 13.10 used). OS X may run the needed software, but is untested.
 * A large amount of memory. Approximately 137GB RAM is used during the get.oturep() step, and ~47GB is used during the cluster() step. Amazon EC2 instance type cr1.8xlarge was used for memory intensive steps, which provides 244GB of memory.
 * Trimmomatic (version 0.32 used)
 * Mothur (version 1.32.1 used)
@@ -13,23 +13,7 @@ coffee_analysis: Supplemental data and code for coffee project.
 * Krona
 
 ##Obtaining raw reads
-Raw reads are deposited in NCBI's SRA. 
-
-###Individual runs:
-
-INT-Coffee: SRR1170902
-
-INT-Control: SRR1170903
-
-TRN-Coffee: SRR1170925
-
-TRN-Control: SRR1170928
-
-ORG-Coffee: SRR1170933
-
-ORG-Control: SRR1170934
-
-As of writing (2014-02-15), these are in the process of being released. Please contact me if you have trouble accessing data.
+Raw reads are deposited in Zenodo (WIP). 
 
 ##Cleaning raw reads
 Prior to running mothur, raw fastq sequences need to be cleaned with trimmomatic. A convenience script is provided at scripts/print_trimm_cmd.py if changes to path names need to be made. By default, the scripts assume the raw reads are in fastqs_raw/
@@ -59,5 +43,3 @@ OCn: ORG-Control
 
 ###Contact info
 primary email: adam.caldwell@gmail.com
-
-institutional email: adam.caldwell@sjsu.edu
