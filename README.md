@@ -13,7 +13,9 @@ coffee_analysis: Supplemental data and code for coffee project.
 * Krona
 
 ##Obtaining raw reads
-Raw reads are deposited in Zenodo (WIP). 
+Raw reads are deposited in Zenodo (http://dx.doi.org/10.5281/zenodo.11120).
+
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11120.png)](http://dx.doi.org/10.5281/zenodo.11120)
 
 ##Cleaning raw reads
 Prior to running mothur, raw fastq sequences need to be cleaned with trimmomatic. A convenience script is provided at scripts/print_trimm_cmd.py if changes to path names need to be made. By default, the scripts assume the raw reads are in fastqs_raw/
